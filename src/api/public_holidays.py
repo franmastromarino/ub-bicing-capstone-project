@@ -1,5 +1,8 @@
 import requests
 
+"""
+Retrieves public holidays by year in Spain.
+"""
 def get_public_holidays(countie : str, year : int):
 
   url = f"https://date.nager.at/api/v3/PublicHolidays/{year}/ES"
@@ -11,7 +14,7 @@ def get_public_holidays(countie : str, year : int):
     data = response.json()
 
     public_holidays_ES = [evento for evento in data if evento.get('counties') is None]
-    public_holidays_CT = [evento for evento in data if evento.get('counties') is not None and 'ES-CT' in evento['counties']]
+    public_holidays_CT = [evento for evento in data if evento.get('counties') is not None and countie in evento['counties']]
 
     return (public_holidays_ES, public_holidays_CT)
 
