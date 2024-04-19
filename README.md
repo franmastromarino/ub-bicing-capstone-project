@@ -11,3 +11,6 @@ brew install 7z
 
 ### Windows
 Guille
+
+## References
+https://www.kdnuggets.com/2022/05/structure-data-science-project-stepbystep-guide.html
