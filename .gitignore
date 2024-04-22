@@ -1,2 +1,3 @@
 .DS_Store
-data/raw/historical
+data/raw/historical/*.csv
+data/raw/historical/*.7z
