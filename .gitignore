@@ -1,5 +1,3 @@
 .DS_Store
-.data
-*.csv
-*.7z
-test/venv
+data/raw/historical/*.csv
+data/raw/historical/*.7z
