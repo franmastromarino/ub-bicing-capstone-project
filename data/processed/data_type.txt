@@ -1,0 +1,863 @@
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3398708 entries, 0 to 3398707
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 236.6+ MB
+>> ./data/raw/historical/2020_02_Febrer_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3500841 entries, 0 to 3500840
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 243.7+ MB
+>> ./data/raw/historical/2020_03_Marc_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 2408419 entries, 0 to 2408418
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 167.7+ MB
+>> ./data/raw/historical/2020_04_Abril_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3892389 entries, 0 to 3892388
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 271.0+ MB
+>> ./data/raw/historical/2020_05_Maig_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3742388 entries, 0 to 3742387
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 260.5+ MB
+>> ./data/raw/historical/2020_06_Juny_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4099864 entries, 0 to 4099863
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 285.4+ MB
+>> ./data/raw/historical/2020_07_Juliol_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4335089 entries, 0 to 4335088
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 301.8+ MB
+>> ./data/raw/historical/2020_08_Agost_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3869580 entries, 0 to 3869579
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 269.4+ MB
+>> ./data/raw/historical/2020_09_Setembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4246500 entries, 0 to 4246499
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 295.6+ MB
+>> ./data/raw/historical/2020_10_Octubre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4455674 entries, 0 to 4455673
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 310.2+ MB
+>> ./data/raw/historical/2020_11_Novembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3670067 entries, 0 to 3670066
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   is_installed         int64  
+ 4   is_renting           int64  
+ 5   is_returning         int64  
+ 6   last_reported        float64
+ 7   is_charging_station  bool   
+ 8   status               object 
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 255.5+ MB
+>> ./data/raw/historical/2020_12_Desembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4419114 entries, 0 to 4419113
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   last_reported        float64
+ 4   is_charging_station  bool   
+ 5   status               object 
+ 6   is_installed         int64  
+ 7   is_renting           int64  
+ 8   is_returning         int64  
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 307.7+ MB
+>> ./data/raw/historical/2021_01_Gener_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4509149 entries, 0 to 4509148
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   last_reported        float64
+ 4   is_charging_station  bool   
+ 5   status               object 
+ 6   is_installed         int64  
+ 7   is_renting           int64  
+ 8   is_returning         int64  
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 313.9+ MB
+>> ./data/raw/historical/2021_02_Febrer_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4017900 entries, 0 to 4017899
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   last_reported        float64
+ 4   is_charging_station  bool   
+ 5   status               object 
+ 6   is_installed         int64  
+ 7   is_renting           int64  
+ 8   is_returning         int64  
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 279.7+ MB
+>> ./data/raw/historical/2021_03_Març_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4528030 entries, 0 to 4528029
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   last_reported        float64
+ 4   is_charging_station  bool   
+ 5   status               object 
+ 6   is_installed         int64  
+ 7   is_renting           int64  
+ 8   is_returning         int64  
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 315.2+ MB
+>> ./data/raw/historical/2021_04_Abril_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4389888 entries, 0 to 4389887
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   last_reported        float64
+ 4   is_charging_station  bool   
+ 5   status               object 
+ 6   is_installed         int64  
+ 7   is_renting           int64  
+ 8   is_returning         int64  
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 305.6+ MB
+>> ./data/raw/historical/2021_05_Maig_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4538684 entries, 0 to 4538683
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   last_reported        float64
+ 4   is_charging_station  bool   
+ 5   status               object 
+ 6   is_installed         int64  
+ 7   is_renting           int64  
+ 8   is_returning         int64  
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 316.0+ MB
+>> ./data/raw/historical/2021_06_Juny_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4308619 entries, 0 to 4308618
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   last_reported        float64
+ 4   is_charging_station  bool   
+ 5   status               object 
+ 6   is_installed         int64  
+ 7   is_renting           int64  
+ 8   is_returning         int64  
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 300.0+ MB
+>> ./data/raw/historical/2021_07_Juliol_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4436678 entries, 0 to 4436677
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           int64  
+ 1   num_bikes_available  int64  
+ 2   num_docks_available  int64  
+ 3   last_reported        float64
+ 4   is_charging_station  bool   
+ 5   status               object 
+ 6   is_installed         int64  
+ 7   is_renting           int64  
+ 8   is_returning         int64  
+ 9   last_updated         int64  
+dtypes: bool(1), float64(1), int64(7), object(1)
+memory usage: 308.9+ MB
+>> ./data/raw/historical/2021_08_Agost_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4520650 entries, 0 to 4520649
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 314.7+ MB
+>> ./data/raw/historical/2021_09_Setembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4384751 entries, 0 to 4384750
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 305.3+ MB
+>> ./data/raw/historical/2021_10_Octubre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4501053 entries, 0 to 4501052
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 313.4+ MB
+>> ./data/raw/historical/2021_11_Novembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4315064 entries, 0 to 4315063
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 300.4+ MB
+>> ./data/raw/historical/2021_12_Desembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4398576 entries, 0 to 4398575
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 306.2+ MB
+>> ./data/raw/historical/2022_01_Gener_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4390690 entries, 0 to 4390689
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 305.7+ MB
+>> ./data/raw/historical/2022_02_Febrer_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3936804 entries, 0 to 3936803
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 274.1+ MB
+>> ./data/raw/historical/2022_03_Març_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4535987 entries, 0 to 4535986
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 315.8+ MB
+>> ./data/raw/historical/2022_04_Abril_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4371369 entries, 0 to 4371368
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 304.3+ MB
+>> ./data/raw/historical/2022_05_Maig_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4523985 entries, 0 to 4523984
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 315.0+ MB
+>> ./data/raw/historical/2022_06_Juny_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4382454 entries, 0 to 4382453
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 305.1+ MB
+>> ./data/raw/historical/2022_07_Juliol_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4524353 entries, 0 to 4524352
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 315.0+ MB
+>> ./data/raw/historical/2022_08_Agost_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4497691 entries, 0 to 4497690
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 313.1+ MB
+>> ./data/raw/historical/2022_09_Setembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4362921 entries, 0 to 4362920
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 303.7+ MB
+>> ./data/raw/historical/2022_10_Octubre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4508304 entries, 0 to 4508303
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 313.9+ MB
+>> ./data/raw/historical/2022_11_Novembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4345375 entries, 0 to 4345374
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 302.5+ MB
+>> ./data/raw/historical/2022_12_Desembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4512523 entries, 0 to 4512522
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 314.2+ MB
+>> ./data/raw/historical/2023_01_Gener_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4064084 entries, 0 to 4064083
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 282.9+ MB
+>> ./data/raw/historical/2023_02_Febrer_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4065829 entries, 0 to 4065828
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 283.1+ MB
+>> ./data/raw/historical/2023_03_Marc_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4295373 entries, 0 to 4295372
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 299.0+ MB
+>> ./data/raw/historical/2023_04_Abril_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3616386 entries, 0 to 3616385
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 251.8+ MB
+>> ./data/raw/historical/2023_05_Maig_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4225973 entries, 0 to 4225972
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 294.2+ MB
+>> ./data/raw/historical/2023_06_Juny_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4179675 entries, 0 to 4179674
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 291.0+ MB
+>> ./data/raw/historical/2023_07_Juliol_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4547623 entries, 0 to 4547622
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 316.6+ MB
+>> ./data/raw/historical/2023_08_Agost_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3113047 entries, 0 to 3113046
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           float64
+ 1   num_bikes_available  float64
+ 2   num_docks_available  float64
+ 3   last_reported        float64
+ 4   is_charging_station  object 
+ 5   status               object 
+ 6   is_installed         float64
+ 7   is_renting           float64
+ 8   is_returning         float64
+ 9   last_updated         float64
+dtypes: float64(8), object(2)
+memory usage: 237.5+ MB
+>> ./data/raw/historical/2023_09_Setembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3729163 entries, 0 to 3729162
+Data columns (total 10 columns):
+ #   Column               Dtype  
+---  ------               -----  
+ 0   station_id           float64
+ 1   num_bikes_available  float64
+ 2   num_docks_available  float64
+ 3   last_reported        float64
+ 4   is_charging_station  object 
+ 5   status               object 
+ 6   is_installed         float64
+ 7   is_renting           float64
+ 8   is_returning         float64
+ 9   last_updated         float64
+dtypes: float64(8), object(2)
+memory usage: 284.5+ MB
+>> ./data/raw/historical/2023_10_Octubre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4487606 entries, 0 to 4487605
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 312.4+ MB
+>> ./data/raw/historical/2023_11_Novembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4343342 entries, 0 to 4343341
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 302.4+ MB
+>> ./data/raw/historical/2023_12_Desembre_BicingNou_ESTACIONS.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 4525546 entries, 0 to 4525545
+Data columns (total 10 columns):
+ #   Column               Dtype 
+---  ------               ----- 
+ 0   station_id           int64 
+ 1   num_bikes_available  int64 
+ 2   num_docks_available  int64 
+ 3   last_reported        int64 
+ 4   is_charging_station  bool  
+ 5   status               object
+ 6   is_installed         int64 
+ 7   is_renting           int64 
+ 8   is_returning         int64 
+ 9   last_updated         int64 
+dtypes: bool(1), int64(8), object(1)
+memory usage: 315.1+ MB
