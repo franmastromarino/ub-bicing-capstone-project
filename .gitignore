@@ -1,3 +1,4 @@
 .DS_Store
 data/raw/historical/*.csv
 data/raw/historical/*.7z
+venv/
