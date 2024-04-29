@@ -39,33 +39,41 @@ valid_station_ids = set(stations_df['station_id'])
 stations_df.set_index('station_id', inplace=True)
 
 def detect_anomalies(df):
-    
-    # DataFrame para registrar anomalías
+    # DataFrame to record anomalies
     anomalies = []
 
     if isinstance(df, dd.DataFrame):
         df = df.compute()
-        
-    # Añadir validaciones
-    # Validar station_id existentes
+    
+    # Check for valid station_id
     invalid_stations = df[~df['station_id'].isin(valid_station_ids)].copy()
     if not invalid_stations.empty:
         invalid_stations['reason'] = 'Invalid station_id'
         anomalies.append(invalid_stations)
 
-    # Asegurar que la columna 'is_charging_station' existe
+    # Ensure 'is_charging_station' column exists
     if 'is_charging_station' not in df.columns:
-        df['is_charging_station'] = False  # O el valor por defecto apropiado
+        df['is_charging_station'] = False  # Set to appropriate default value if missing
 
-    # Validaciones de capacidad y consistencia
+    # Join with station info to get capacity and check capacity consistencies
     df = df.join(stations_df[['capacity']], on='station_id', how='left')
     df['total_bikes_docks'] = df['num_bikes_available'] + df['num_docks_available']
     df['is_over_capacity'] = df['total_bikes_docks'] > df['capacity']
+    df['is_under_capacity'] = df['total_bikes_docks'] < df['capacity']
     df['is_ebike_error'] = (df['is_charging_station'] == False) & (df['num_bikes_available_types.ebike'] > 0)
     
-    capacity_issues = df[df['is_over_capacity'] | df['is_ebike_error']].copy()
-    if not capacity_issues.empty:
-        capacity_issues['reason'] = capacity_issues.apply(lambda x: 'Over capacity' if x['is_over_capacity'] else 'Ebike without charging station', axis=1)
-        anomalies.append(capacity_issues)
-        
+    # Define a dictionary for reason determination based on conditions
+    reason_dict = {
+        'is_over_capacity': 'Over capacity',
+        'is_under_capacity': 'Under capacity',
+        'is_ebike_error': 'Ebike without charging station'
+    }
+    
+    # Apply the dictionary to set the 'reason' based on multiple conditions
+    for condition, reason in reason_dict.items():
+        condition_issues = df[df[condition]].copy()
+        if not condition_issues.empty:
+            condition_issues['reason'] = reason
+            anomalies.append(condition_issues)
+    
     return anomalies
