@@ -88,14 +88,6 @@ def drop_column(list_of_dataframes, drop_columns):
   
   return list_of_dataframes
 
-list_of_files = glob.glob(path_to_csv_folder)
-
-table = Table(title = "List of Files")
-table.add_column("File")
-for filename in list_of_files: table.add_row(filename)
-console = Console()
-console.print(table)
-
 def merge_with_station_database(list_of_dataframes, stations_dataframe):
   for filename in tqdm(list_of_dataframes):
     list_of_dataframes[filename] = list_of_dataframes[filename].merge(stations_dataframe, on='station_id', how='left')
@@ -103,9 +95,23 @@ def merge_with_station_database(list_of_dataframes, stations_dataframe):
   return list_of_dataframes
 
 def save_file(list_of_dataframes):
-  for filename in tqdm(list_of_dataframes):
+  files_in_directory = os.listdir(path_to_write_csv_folder)
+
+  for filename in (list_of_dataframes):
     name_file = filename.rstrip('.csv')
-    list_of_dataframes[filename].to_csv(f'{path_to_write_csv_folder}/{name_file}-*.csv', index=False)
+    print(name_file)
+    files_with_base_name = [archivo for archivo in files_in_directory if archivo.startswith(name_file)]
+    if files_with_base_name : continue
+    else : list_of_dataframes[filename].to_csv(f'{path_to_write_csv_folder}/{name_file}-*.csv', index=False, header=True)
+
+
+list_of_files = sorted(glob.glob(path_to_csv_folder))
+
+table = Table(title = "List of Files")
+table.add_column("File")
+for filename in list_of_files: table.add_row(filename)
+console = Console()
+console.print(table)
 
 print('\n')
 print(" READING STATION DATABASE ".center(100, "="))
@@ -156,6 +162,8 @@ print('\n')
 print_table(list_of_dataframes=list_of_dataframes)
 print('\n')
 print(" PARSING TIMESTAMP TO DATETYPE ".center(100, "="))
+## TODO I dont know why do this
+list_of_dataframes['2023_08_Agost_BicingNou_ESTACIONS.csv'] = list_of_dataframes['2023_08_Agost_BicingNou_ESTACIONS.csv'].dropna(how='all')
 list_of_dataframes = convert_timestamp_to_datetype(list_of_dataframes)
 print(" DROPPING TTL, TRAFFIC AND V1 ".center(100, "="))
 list_of_dataframes = drop_column(list_of_dataframes, ['ttl', 'traffic', 'V1'])
