@@ -2,55 +2,167 @@ import os
 import sys
 import glob
 import pandas as pd
-
 from tqdm import tqdm
-from tabulate import tabulate
+import dask.dataframe as dd
+from rich.table import Table
+from rich.console import Console
 
 
 path_to_csv_folder = "./data/raw/historical/*.csv"
 
-using_columns = [
-    'station_id', 
-    'num_bikes_available', 
-    'num_docks_available', 
-    'last_reported', 
-    'is_charging_station', 
-    'status', 
-    'is_installed', 
-    'is_renting', 
-    'is_returning',
-    'last_updated'
-]
+path = './data/'
+path_to_csv_folder = "./data/raw/historical/*.csv"
+path_to_write_csv_folder = "./data/processed/historical"
+path_to_stations_file = './data/raw/Informacio_Estacions_Bicing.csv'
+path_to_processed_stations_file = './data/processed/stations.csv'
 
 dtype = {
-    'station_id'            : 'object',
-    'num_bikes_available'   : 'object',
-    'num_docks_available'   : 'object',
-    'last_reported'         : 'object',
-    'is_charging_station'   : 'object',
-    'status'                : 'object',
-    'is_installed'          : 'object',
-    'is_renting'            : 'object',
-    'is_returning'          : 'object',
-    'last_updated'          : 'object',
+    'station_id': 'Int64',  # Assuming station_id has no non-integer values
+    'num_bikes_available': 'Int64',
+    'num_bikes_available_types.mechanical': 'Int64',
+    'num_bikes_available_types.ebike': 'Int64',
+    'num_docks_available': 'Int64',
+    'last_reported': 'Int64',  # If this column has no non-integer values, else consider 'object'
+    'is_charging_station': 'boolean',  # Will convert to boolean later
+    'status': 'category',
+    'is_installed': 'boolean',  # Will convert to boolean later
+    'is_renting': 'boolean',  # Will convert to boolean later
+    'is_returning': 'boolean',  # Will convert to boolean later
+    'traffic': 'object',  # Assuming this is categorical
+    'last_updated': 'Int64',  # If this column has no non-integer values, else consider 'object'
+    'ttl': 'Int64'  # Using Pandas' nullable integer
 }
 
-list_of_files = sorted(glob.glob(path_to_csv_folder))
-data = [[file] for file in list_of_files]
+dtype_stations = {
+    'station_id': 'Int64',
+    'name' : 'object',
+    'physical_configuration' : 'object',
+    'lat' : 'object',
+    'lon' : 'object',
+    'name' : 'object',
+}
 
-print()
-print(tabulate(data, headers=['List of Files'], tablefmt='grid'))
-print()
+def valid_dtype_per_column(df, column, dtype):
+  data_type = tipo_de_dato_columna = df[column].dtype
 
-print(" Load List of Dataframes ".center(80, "="))
+  if dtype == 'Int64' and data_type == 'Int64' : return [True, data_type]
+  if dtype == 'boolean' and data_type == 'boolean' : return [True, data_type]
+
+  raise Exception(f'{column} {data_type}')
+
+def print_table(list_of_dataframes):
+  
+  table = Table(title = "DataFrames")
+
+  table.add_column("File")
+  table.add_column("Column")
+  table.add_column("Type")
+
+  for filename in list_of_dataframes:
+    columns = list_of_dataframes[filename].columns
+    first = True
+    for column in columns:
+      column_dtype = str(list_of_dataframes[filename][column].dtype)
+      if first:
+        table.add_row(filename, column, column_dtype)
+        first = False
+      else:
+        table.add_row("", column, column_dtype)
+
+  console = Console()
+  console.print(table)
+
+def convert_timestamp_to_datetype(list_of_dataframes):
+
+  for filename in tqdm(list_of_dataframes):
+    list_of_dataframes[filename]['last_reported'] = dd.to_datetime(list_of_dataframes[filename]['last_reported'], unit='s')
+    list_of_dataframes[filename]['last_updated'] = dd.to_datetime(list_of_dataframes[filename]['last_updated'], unit='s')
+  
+  return list_of_dataframes
+
+def drop_column(list_of_dataframes, drop_columns):
+
+  for filename in tqdm(list_of_dataframes):
+    columns_to_drop = [col for col in drop_columns if col in list_of_dataframes[filename].columns]
+    list_of_dataframes[filename] = list_of_dataframes[filename].drop(columns=columns_to_drop)
+  
+  return list_of_dataframes
+
+list_of_files = glob.glob(path_to_csv_folder)
+
+table = Table(title = "List of Files")
+table.add_column("File")
+for filename in list_of_files: table.add_row(filename)
+console = Console()
+console.print(table)
+
+def merge_with_station_database(list_of_dataframes, stations_dataframe):
+  for filename in tqdm(list_of_dataframes):
+    list_of_dataframes[filename] = list_of_dataframes[filename].merge(stations_dataframe, on='station_id', how='left')
+  
+  return list_of_dataframes
+
+def save_file(list_of_dataframes):
+  for filename in tqdm(list_of_dataframes):
+    name_file = filename.rstrip('.csv')
+    list_of_dataframes[filename].to_csv(f'{path_to_write_csv_folder}/{name_file}-*.csv', index=False)
+
+print('\n')
+print(" READING STATION DATABASE ".center(100, "="))
+df_stantions = dd.read_csv(path_to_processed_stations_file, dtype = dtype_stations)
+print(df_stantions.head())
+print('\n')
+
+print(" READ EACH FILE AND CREATE A DASK DATAFRAME ".center(100, "="))
+print(f"TOTAL OF FILE = {len(list_of_files)}")
 list_of_dataframes = {}
-for index, file in enumerate(list_of_files):
-    key = os.path.basename(file)
-    print(">> " + file)
-    #list_of_dataframes[key] = pd.read_csv(file, usecols=using_columns, dtype=dtype, low_memory=False)
-    list_of_dataframes[key] = pd.read_csv(file, usecols=using_columns, dtype=dtype)
-    list_of_dataframes[key].info()
+progression_bar = tqdm(list_of_files)
+for filename in progression_bar:
+  csv_filename = os.path.basename(filename)
+  list_of_dataframes[csv_filename] = dd.read_csv( path = filename, dtype=dtype, true_values = ['TRUE'], false_values = ['FALSE', 'NA'])
+print('\n')
 
-## This files has problems with mixed types
-## ./data/raw/historical/2023_08_Agost_BicingNou_ESTACIONS.csv
-## ./data/raw/historical/2023_09_Setembre_BicingNou_ESTACIONS.csv
+print(" VALIDATING DATA TYPE ".center(100, "="))
+columns_and_types = [
+    ('is_installed', 'boolean'),
+    ('is_renting', 'boolean'),
+    ('is_returning', 'boolean'),
+    ('is_charging_station', 'boolean'),
+]
+
+for filename in list_of_dataframes:
+    for column, dtype in columns_and_types:
+        result = valid_dtype_per_column(list_of_dataframes[filename], column, dtype)
+
+print('BOOLEANS OK')
+
+columns_and_types = [
+    ('station_id', 'Int64'),
+    ('num_bikes_available', 'Int64'),
+    ('num_bikes_available_types.mechanical', 'Int64'),
+    ('num_bikes_available_types.ebike', 'Int64'),
+    ('num_docks_available', 'Int64'),
+    ('last_reported', 'Int64'),
+    ('last_updated', 'Int64'),
+
+]
+
+for filename in list_of_dataframes:
+    for column, dtype in columns_and_types:
+        result = valid_dtype_per_column(list_of_dataframes[filename], column, dtype)
+
+print('INTEGERS OK')
+print('\n')
+print_table(list_of_dataframes=list_of_dataframes)
+print('\n')
+print(" PARSING TIMESTAMP TO DATETYPE ".center(100, "="))
+list_of_dataframes = convert_timestamp_to_datetype(list_of_dataframes)
+print(" DROPPING TTL, TRAFFIC AND V1 ".center(100, "="))
+list_of_dataframes = drop_column(list_of_dataframes, ['ttl', 'traffic', 'V1'])
+print_table(list_of_dataframes=list_of_dataframes)
+print('\n')
+print(" MERGING WITH STATIONS ".center(100, "="))
+list_of_dataframes = merge_with_station_database(list_of_dataframes, df_stantions)
+print_table(list_of_dataframes=list_of_dataframes)
+print(" SAVING NEW DATA ".center(100, "="))
+save_file(list_of_dataframes)
