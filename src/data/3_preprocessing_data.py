@@ -162,7 +162,7 @@ print('\n')
 print_table(list_of_dataframes=list_of_dataframes)
 print('\n')
 print(" PARSING TIMESTAMP TO DATETYPE ".center(100, "="))
-## TODO I dont know why do this
+## TODO I dont know why I have to do this
 list_of_dataframes['2023_08_Agost_BicingNou_ESTACIONS.csv'] = list_of_dataframes['2023_08_Agost_BicingNou_ESTACIONS.csv'].dropna(how='all')
 list_of_dataframes = convert_timestamp_to_datetype(list_of_dataframes)
 print(" DROPPING TTL, TRAFFIC AND V1 ".center(100, "="))
