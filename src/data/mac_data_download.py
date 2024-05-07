@@ -5,8 +5,21 @@ data_dir = 'data/raw/historical'
 os.makedirs(data_dir, exist_ok=True)
 
 # List of month names in Catalan
-i2m = list(zip(range(1, 13), ['Gener', 'Febrer', 'Març', 'Abril', 'Maig', 'Juny',
-                              'Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre']))
+i2m = list(zip(range(1, 13), [
+    'Gener', 
+    'Febrer', 
+    'Marc',
+    'Març', 
+    # 'Abril', 
+    # 'Maig', 
+    # 'Juny',
+    # 'Juliol', 
+    # 'Agost', 
+    # 'Setembre', 
+    # 'Octubre', 
+    # 'Novembre', 
+    # 'Desembre'
+    ]))
 
 # Loop through each year and month to download and extract data
 for year in [2023, 2022, 2021, 2020]:
