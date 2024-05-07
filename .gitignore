@@ -3,3 +3,4 @@ data/raw/historical/*.csv
 data/raw/historical/*.7z
 venv/
 data/processed/historical/*.csv
+data/processed/groupby/*.csv
