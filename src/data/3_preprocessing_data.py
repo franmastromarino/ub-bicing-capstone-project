@@ -90,7 +90,7 @@ def drop_column(list_of_dataframes, drop_columns):
 
 def merge_with_station_database(list_of_dataframes, stations_dataframe):
   for filename in tqdm(list_of_dataframes):
-    list_of_dataframes[filename] = list_of_dataframes[filename].merge(stations_dataframe, on='station_id', how='inner')
+    list_of_dataframes[filename] = list_of_dataframes[filename].merge(stations_dataframe, on='station_id', how='left')
   
   return list_of_dataframes
 
