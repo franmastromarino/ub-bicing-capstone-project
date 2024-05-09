@@ -47,8 +47,8 @@ ddf['last_reported'] = ddf['last_reported'].astype('Float64')
 ddf = ddf.map_partitions(extract_month_day)
 ddf = ddf.drop(['last_reported'], axis=1)
 
-new_ddf = ddf.groupby(['station_id', 'month', 'day', 'hour']).agg({'num_docks_available': 'mean'}).compute(progressbar=True)
+new_ddf = ddf.groupby(['station_id', 'month', 'day', 'hour']).agg({'num_docks_available': 'mean'}).reset_index().compute()
 
-new_ddf.to_csv('./data/processed/groupby/stations_v4.csv', index=False)
+new_ddf.to_csv('./data/processed/groupby/stations_v4.csv')
 
-print(new_ddf.head())
+print(new_ddf.head(50))
