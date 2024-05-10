@@ -1,5 +1,5 @@
 .DS_Store
 data/raw/historical/*.csv
 data/raw/historical/*.7z
-venv/
-data/processed/historical/*.csv
+data/raw/historical/2024/*.csv
+data/raw/historical/2024/*.7z
