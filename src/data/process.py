@@ -1,5 +1,6 @@
 import pandas as pd
 import dask.dataframe as dd
+import numpy as np
 
 # Define paths
 path_to_csv_folder = './data/raw/historical/*.csv'
@@ -26,14 +27,14 @@ def dataset_load():
     }
     return dd.read_csv(path_to_csv_folder, na_values=['NAN'], dtype=dtype)
 
-def dataset_preprocess(ddf):
+def dataset_preprocess(dataset):
 
-    def extract_month_day(df):
-        df['last_reported'] = pd.to_datetime(df['last_reported'], unit='s')
-        df['month'] = df['last_reported'].dt.month
-        df['day'] = df['last_reported'].dt.day
-        df['hour'] = df['last_reported'].dt.hour
-        return df
+    def extract_month_day(partition):
+        partition['last_reported'] = pd.to_datetime(partition['last_reported'], unit='s')
+        partition['month'] = partition['last_reported'].dt.month
+        partition['day'] = partition['last_reported'].dt.day
+        partition['hour'] = partition['last_reported'].dt.hour
+        return partition
     
     drop_columns = [
         'num_bikes_available', 
@@ -47,58 +48,70 @@ def dataset_preprocess(ddf):
         'last_updated',
         'ttl',
     ]
-    ddf = ddf.drop(drop_columns, axis=1)
-    ddf = ddf.dropna(subset=['last_reported'])
-    dff = ddf.map_partitions(extract_month_day)
-    return dff.groupby(['station_id', 'month', 'day', 'hour']).agg({'num_docks_available': 'mean'}).reset_index()
+    dataset = dataset.drop(drop_columns, axis=1)
+    dataset = dataset.dropna(subset=['last_reported'])
+    dataset = dataset.map_partitions(extract_month_day)
+    return dataset.groupby(['station_id', 'month', 'day', 'hour']).agg({'num_docks_available': 'mean'}).reset_index()
 
-def dataset_merge(ddf):
+def dataset_merge(dataset):
     df_stations = dd.read_csv(path_to_csv_file_stations, dtype={'station_id': 'Int64'})
-    return dd.merge(ddf, df_stations[['station_id', 'capacity']], on='station_id', how='inner')
+    return dd.merge(dataset, df_stations[['station_id', 'capacity']], on='station_id', how='inner')
 
-def dataset_add_percentage_docks_available(ddf):
+def dataset_add_percentage_docks_available(dataset):
     
-    def calculate_percentage_docks_available(df):
-        df['percentage_docks_available'] = (df['num_docks_available'] / df['capacity'])
-        return df.drop(['num_docks_available', 'capacity'], axis=1)
+    def calculate_percentage_docks_available(partition):
+        partition['percentage_docks_available'] = (partition['num_docks_available'] / partition['capacity']).round(16)
+        return partition.drop(['num_docks_available', 'capacity'], axis=1)
     
-    return ddf.map_partitions(calculate_percentage_docks_available)
+    return dataset.map_partitions(calculate_percentage_docks_available)
 
-def dataset_add_ctx(df):
+def dataset_order_by_station_id_date(dataset):
+    return dataset.sort_values(by=['station_id', 'month', 'day', 'hour'])
+
+def dataset_add_ctx(dataset):
     # Define a custom function to apply to each group
     def apply_shifts(group):
         group = group.sort_values(by=['month', 'day', 'hour'])
-        return group.assign(
+        group = group.assign(
             ctx_4=group['percentage_docks_available'].shift(4),
             ctx_3=group['percentage_docks_available'].shift(3),
             ctx_2=group['percentage_docks_available'].shift(2),
             ctx_1=group['percentage_docks_available'].shift(1)
         )
+        # Fill na values of every station first four hours -> https://snipboard.io/yX2Q4d.jpg
+        group[['ctx_4', 'ctx_3', 'ctx_2', 'ctx_1']] = group[['ctx_4', 'ctx_3', 'ctx_2', 'ctx_1']].ffill().bfill()
+        return group
     
     # Group by 'station_id', then apply the shifting function to each group
-    return df.map_partitions(
+    return dataset.map_partitions(
         lambda partition: partition.groupby('station_id').apply(apply_shifts)
     )
 
-def dataset_rearrange(df):
-    df = df.map_partitions(lambda x: x.iloc[5::5])
-    cols = df.columns.tolist()
+def dataset_rearrange(dataset):
+    cols = dataset.columns.tolist()
     cols.remove('percentage_docks_available')
     cols.append('percentage_docks_available')
-    return df[cols]
+    return dataset[cols]
 
-def dataset_order_by_station_id_date(df):
-    return df.sort_values(by=['station_id', 'month', 'day', 'hour'])
+def dataset_select_every_5_hours(dataset):
+        
+    # TODO: Delete the first row of every station except the first one
+    # De esta manera se produciria el salto cada 6 que se observa en el dataset metadata_sample_submission_ordered_2024.csv entre estaciones
+    
+    # TODO: Select every 5 hours
+    
+    return dataset
 
-def dataset_save_to_csv(df):
-    df.compute().reset_index(drop=True).to_csv(path_to_final_csv, index=True, index_label='index')
+def dataset_save_to_csv(dataset):
+    dataset.compute().reset_index(drop=True).to_csv(path_to_final_csv, index=True, index_label='index')
 
 # Process workflow
-ddf = dataset_load()
-ddf = dataset_preprocess(ddf)
-ddf = dataset_merge(ddf)
-ddf = dataset_add_percentage_docks_available(ddf)
-ddf = dataset_order_by_station_id_date(ddf)  # Reorder data first
-ddf = dataset_add_ctx(ddf)  # Apply context columns on the correctly ordered data
-ddf = dataset_rearrange(ddf)
-dataset_save_to_csv(ddf)  # Save the final DataFram
+dataset = dataset_load()
+dataset = dataset_preprocess(dataset)
+dataset = dataset_merge(dataset)
+dataset = dataset_add_percentage_docks_available(dataset)
+dataset = dataset_order_by_station_id_date(dataset)  # Reorder data first
+dataset = dataset_add_ctx(dataset)  # Apply context columns on the correctly ordered data
+dataset = dataset_rearrange(dataset)
+# TODO: dataset = dataset_select_every_5_hours(dataset)
+dataset_save_to_csv(dataset)  # Save the final DataFram
