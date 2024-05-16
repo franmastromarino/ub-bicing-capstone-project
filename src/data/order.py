@@ -9,7 +9,7 @@ def order_dataset(input_path, output_path):
     df = pd.read_csv(input_path)
     
     # Sort the DataFrame by station_id, month, day, and hour
-    df_sorted = df.sort_values(by=['month', 'day', 'hour', 'station_id'])
+    df_sorted = df.sort_values(by=['station_id','month', 'day', 'hour'])
     
     # Reset the index of the sorted DataFrame
     df_sorted.reset_index(drop=True, inplace=True)
