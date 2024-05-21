@@ -3,7 +3,7 @@ import dask.dataframe as dd
 import numpy as np
 
 # Define paths
-path_to_csv_folder = './data/raw/historical/*.csv'
+path_to_csv_folder = './data/raw/historical/2024/*.csv'
 path_to_csv_file_stations = './data/raw/Informacio_Estacions_Bicing.csv'
 path_to_final_csv = './data/processed/groupby/stations_final.csv'
 
@@ -68,6 +68,17 @@ def dataset_add_percentage_docks_available(dataset):
 def dataset_order_by_station_id_date(dataset):
     return dataset.sort_values(by=['station_id', 'month', 'day', 'hour'])
 
+def dataset_delete_first_row_by_station(dataset):
+    # Define a custom function to apply to each group
+    def apply_delete(group):
+        return group.iloc[1:]
+    
+    # Group by 'station_id', then apply the shifting function to each group
+    return dataset.map_partitions(
+        lambda partition: partition.groupby('station_id').apply(apply_delete)
+    )
+
+
 def dataset_add_ctx(dataset):
     # Define a custom function to apply to each group
     def apply_shifts(group):
@@ -94,16 +105,16 @@ def dataset_rearrange(dataset):
     return dataset[cols]
 
 def dataset_select_every_5_hours(dataset):
-        
-    # TODO: Delete the first row of every station except the first one
-    # De esta manera se produciria el salto cada 6 que se observa en el dataset metadata_sample_submission_ordered_2024.csv entre estaciones
-    
+
     # TODO: Select every 5 hours
     
     return dataset
 
 def dataset_save_to_csv(dataset):
     dataset.compute().reset_index(drop=True).to_csv(path_to_final_csv, index=True, index_label='index')
+
+def dataset_create_index(dataset):
+    return dataset.reset_index(drop=True)
 
 # Process workflow
 dataset = dataset_load()
@@ -112,6 +123,8 @@ dataset = dataset_merge(dataset)
 dataset = dataset_add_percentage_docks_available(dataset)
 dataset = dataset_order_by_station_id_date(dataset)  # Reorder data first
 dataset = dataset_add_ctx(dataset)  # Apply context columns on the correctly ordered data
-dataset = dataset_rearrange(dataset)
+dataset = dataset_create_index(dataset)
+dataset = dataset_delete_first_row_by_station(dataset)
+#dataset = dataset_rearrange(dataset)
 # TODO: dataset = dataset_select_every_5_hours(dataset)
 dataset_save_to_csv(dataset)  # Save the final DataFram
