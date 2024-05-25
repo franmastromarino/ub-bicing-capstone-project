@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 
 import sklearn
 from sklearn.model_selection import train_test_split
+from sklearn.ensemble import GradientBoostingRegressor
+
 
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
@@ -25,30 +27,24 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 #This is not used, could be used for the subprocess
 my_username = "ulisesreytorne@gmail.com"
 databricks_base_url = f'/Users/{my_username}'
+my_password = "Loscinco5!"
 print("El usuario y la contraseña son:")
 print(my_username)
-print("Loscinco5!")
+print(my_password)
 
 
 # Define the command as a list of arguments
 command = ["databricks", "configure", "--host", "https://community.cloud.databricks.com/"]
 
-# Use subprocess to execute the command
-# subprocess.run(command, check=True)
-
 # Use subprocess to execute the command with username and password
 process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE)
-my_password = "Loscinco5!"
 
 process.communicate(input=f"{my_username}\n{my_password}\n".encode())
-
 
 mlflow.set_tracking_uri("databricks")
 
 mlflow.set_experiment(f'{databricks_base_url}/bicing')
 
-
-from sklearn.ensemble import GradientBoostingRegressor
 
 def train_model(x, y, xt, yt, learning_rate=0.1, n_estimators=100, max_depth=3):
 
