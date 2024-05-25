@@ -3,11 +3,12 @@ import dask.dataframe as dd
 import numpy as np
 
 # Define paths
-path_to_csv_folder = './data/raw/historical/2024/*.csv'
+path_to_csv_folder_2023 = './data/raw/historical/2023/*.csv'
+path_to_csv_folder_2024 = './data/raw/historical/2024/*.csv'
 path_to_csv_file_stations = './data/raw/Informacio_Estacions_Bicing.csv'
 path_to_final_csv = './data/processed/groupby/stations_final.csv'
-
-def dataset_load():
+    
+def dataset_load(path_to_csv):
     # Define data types and columns to drop
     dtype = {
         'station_id': 'Int64',  # Assuming station_id has no non-integer values
@@ -25,7 +26,17 @@ def dataset_load():
         'last_updated': 'Int64',  # If this column has no non-integer values, else consider 'object'
         'ttl': 'Int64'  # Using Pandas' nullable integer
     }
-    return dd.read_csv(path_to_csv_folder, na_values=['NAN'], dtype=dtype)
+    return dd.read_csv(path_to_csv, na_values=['NAN'], dtype=dtype)
+
+def dataset_filter_valid_station_ids(dataset_2023):
+    # Get present station_ids in both datasets
+    station_ids_2023 = dataset_2023['station_id'].unique().compute()
+    dataset_2024 = dataset_load(path_to_csv_folder_2024)
+    station_ids_2024 = dataset_2024['station_id'].unique().compute()
+    # Get the intersection of both sets
+    valid_station_ids = set(station_ids_2023).intersection(set(station_ids_2024))
+    # Filter the dataset
+    return dataset_2023[dataset_2023['station_id'].isin(valid_station_ids)]
 
 def dataset_preprocess(dataset):
 
@@ -38,7 +49,7 @@ def dataset_preprocess(dataset):
         return partition
     
     def delete_row_out_of_date(partition):
-        return partition[partition['year'] == 2024]
+        return partition[partition['year'] == 2023]
     
     drop_columns = [
         'num_bikes_available', 
@@ -65,7 +76,8 @@ def dataset_merge(dataset):
 def dataset_add_percentage_docks_available(dataset):
     
     def calculate_percentage_docks_available(partition):
-        partition['percentage_docks_available'] = (partition['num_docks_available'] / partition['capacity']).round(16)
+        # Calculate the percentage of docks available and round to 16 decimal places and max 1
+        partition['percentage_docks_available'] = (partition['num_docks_available'] / partition['capacity']).round(16).clip(0, 1)
         return partition.drop(['num_docks_available', 'capacity'], axis=1)
     
     return dataset.map_partitions(calculate_percentage_docks_available)
@@ -107,8 +119,9 @@ def dataset_save_to_csv(dataset):
 def dataset_create_index(dataset):
     return dataset.reset_index(drop=True)
 
-# Process workflow
-dataset = dataset_load()
+# # Process workflow
+dataset = dataset_load(path_to_csv_folder_2023)
+dataset = dataset_filter_valid_station_ids(dataset)
 dataset = dataset_preprocess(dataset)
 dataset = dataset_merge(dataset)
 dataset = dataset_add_percentage_docks_available(dataset)
