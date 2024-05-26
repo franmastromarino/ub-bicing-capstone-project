@@ -1,6 +1,8 @@
 .DS_Store
 data/raw/historical/*.csv
 data/raw/historical/*.7z
+data/raw/historical/2023/*.csv
+data/raw/historical/2023/*.7z
 data/raw/historical/2024/*.csv
 data/raw/historical/2024/*.7z
 venv/

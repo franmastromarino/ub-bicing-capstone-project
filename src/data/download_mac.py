@@ -22,7 +22,7 @@ i2m = list(zip(range(1, 13), [
     ]))
 
 # Loop through each year and month to download and extract data
-for year in [2024]:
+for year in [2023]:
     for month, month_name in i2m:
         file_name = f'{year}_{month:02d}_{month_name}_BicingNou_ESTACIONS.7z'
         file_path = os.path.join(data_dir, file_name)
