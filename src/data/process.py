@@ -1,6 +1,5 @@
 import pandas as pd
 import dask.dataframe as dd
-import numpy as np
 
 # Define paths
 path_to_csv_folder_2023 = './data/raw/historical/2023/*.csv'
@@ -41,11 +40,11 @@ def dataset_filter_valid_station_ids(dataset_2023):
 def dataset_preprocess(dataset):
 
     def extract_month_day(partition):
-        partition['last_reported'] = pd.to_datetime(partition['last_reported'], unit='s')
-        partition['month'] = partition['last_reported'].dt.month
-        partition['day'] = partition['last_reported'].dt.day
-        partition['hour'] = partition['last_reported'].dt.hour
-        partition['year'] = partition['last_reported'].dt.year
+        datetime = pd.to_datetime(partition['last_reported'], unit='s')
+        partition['month'] = datetime.dt.month
+        partition['day'] = datetime.dt.day
+        partition['hour'] = datetime.dt.hour
+        partition['year'] = datetime.dt.year
         return partition
     
     def delete_row_out_of_date(partition):
@@ -71,7 +70,7 @@ def dataset_preprocess(dataset):
 
 def dataset_merge(dataset):
     df_stations = dd.read_csv(path_to_csv_file_stations, dtype={'station_id': 'Int64'})
-    return dd.merge(dataset, df_stations[['station_id', 'capacity']], on='station_id', how='inner')
+    return dd.merge(dataset, df_stations[['station_id', 'lat', 'lon', 'altitude', 'post_code', 'capacity', 'is_charging_station']], on='station_id', how='inner')
 
 def dataset_add_percentage_docks_available(dataset):
     
