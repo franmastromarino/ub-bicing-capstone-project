@@ -41,6 +41,7 @@ def dataset_preprocess(dataset):
 
     def extract_month_day(partition):
         datetime = pd.to_datetime(partition['last_reported'], unit='s')
+        partition['laboral_day'] = datetime.dt.weekday < 5
         partition['month'] = datetime.dt.month
         partition['day'] = datetime.dt.day
         partition['hour'] = datetime.dt.hour
@@ -66,11 +67,11 @@ def dataset_preprocess(dataset):
     dataset = dataset.dropna(subset=['last_reported'])
     dataset = dataset.map_partitions(extract_month_day)
     dataset = dataset.map_partitions(delete_row_out_of_date)
-    return dataset.groupby(['station_id', 'month', 'day', 'hour']).agg({'num_docks_available': 'mean'}).reset_index()
+    return dataset.groupby(['station_id', 'month', 'day', 'hour']).agg({'laboral_day': 'first', 'num_docks_available': 'mean'}).reset_index()
 
 def dataset_merge(dataset):
     df_stations = dd.read_csv(path_to_csv_file_stations, dtype={'station_id': 'Int64'})
-    return dd.merge(dataset, df_stations[['station_id', 'lat', 'lon', 'altitude', 'post_code', 'capacity', 'is_charging_station']], on='station_id', how='inner')
+    return dd.merge(dataset, df_stations[['station_id', 'altitude', 'post_code', 'capacity']], on='station_id', how='inner')
 
 def dataset_add_percentage_docks_available(dataset):
     
@@ -86,7 +87,7 @@ def dataset_order_by_station_id_date(dataset):
 
 def dataset_add_ctx(dataset):
     # Define a custom function to apply to each group
-    def apply_shifts(group):
+    def calculate_contexts(group):
         group = group.sort_values(by=['month', 'day', 'hour'])
         group = group.assign(
             ctx_4=group['percentage_docks_available'].shift(4),
@@ -94,13 +95,15 @@ def dataset_add_ctx(dataset):
             ctx_2=group['percentage_docks_available'].shift(2),
             ctx_1=group['percentage_docks_available'].shift(1)
         )
-        # Fill na values of every station first four hours -> https://snipboard.io/yX2Q4d.jpg
+        # Fill na values of every station first four hours
         group[['ctx_4', 'ctx_3', 'ctx_2', 'ctx_1']] = group[['ctx_4', 'ctx_3', 'ctx_2', 'ctx_1']].ffill().bfill()
+         # Rename columns to use 'ctx-' prefix
+        group = group.rename(columns={'ctx_4': 'ctx-4', 'ctx_3': 'ctx-3', 'ctx_2': 'ctx-2', 'ctx_1': 'ctx-1'})
         return group
     
     # Group by 'station_id', then apply the shifting function to each group
     return dataset.map_partitions(
-        lambda partition: partition.groupby('station_id').apply(apply_shifts)
+        lambda partition: partition.groupby('station_id').apply(calculate_contexts)
     )
 
 def dataset_rearrange(dataset):
