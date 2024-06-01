@@ -2,14 +2,13 @@
 Requirements: mlflow
 pip install databricks-cli
 TODO: Add requirements to requirements.txt file
-TODO: Model name should appear in databricks
 """
 #Import libraries
 
 import subprocess
 import mlflow
 from training_utils import eval_metrics, plot_real_vs_prediction
-
+from lstm import create_lstm_model
 
 import numpy as np
 import pandas as pd
@@ -112,15 +111,17 @@ df.dropna(inplace=True)
 #df.rename(columns=lambda x: x.replace('ctx_', 'ctx-'), inplace=True)
 
 models = [
-    LinearRegression(),
-    LinearSVR(),
-    DecisionTreeRegressor(),
+    # LinearRegression(),
+    # LinearSVR(),
+    # DecisionTreeRegressor(),
     # RandomForestRegressor(),
-    # GradientBoostingRegressor()
+    # GradientBoostingRegressor(),
+    #"simple_lstm"
 
 ]
 
-chosen_features = [['ctx-4', 'ctx-3', 'ctx-2', 'ctx-1'], ['ctx-1']]
+chosen_features = [['ctx-4', 'ctx-3', 'ctx-2', 'ctx-1', 'altitude', 'laborable']]
+
 
 for features in chosen_features:
   for model in models:
@@ -129,4 +130,14 @@ for features in chosen_features:
     y = df['percentage_docks_available']
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # if model == "simple_lstm":
+    #   # Suppose X_train is of shape (1000, 6) meaning 1000 samples and 6 features
+    #   X_train = X_train.values.reshape((X_train.shape[0], X_train.shape[1], 1)) # This will reshape it to (1000, 1, 6)
+
+    #   # Do the same for X_test
+    #   X_test = X_test.values.reshape((X_train.shape[0], X_train.shape[1], 1))
+
+    #   model = create_lstm_model((X_train.shape))
+
     train_model(X_train, y_train, X_test, y_test, model, features)
