@@ -101,12 +101,12 @@ def train_model(x, y, xt, yt, model, **model_kwargs):
 
 # Load the data
 
-path = "../../data/processed/groupby/stations_final_2023.csv"
+path = "../../data/processed/groupby/stations_final.csv"
 df = pd.read_csv(path)
 df.dropna(inplace=True)
-df.rename(columns=lambda x: x.replace('ctx_', 'ctx-'), inplace=True)
+#df.rename(columns=lambda x: x.replace('ctx_', 'ctx-'), inplace=True)
 
-X = df[['month', 'day', 'hour', 'ctx-4', 'ctx-3', 'ctx-2', 'ctx-1']]
+X = df[['ctx-4', 'ctx-3', 'ctx-2', 'ctx-1']] #df[['month', 'day', 'hour', 'ctx-4', 'ctx-3', 'ctx-2', 'ctx-1']]
 # X = df[['ctx-4', 'ctx-3', 'ctx-2', 'ctx-1']] 
 y = df['percentage_docks_available']
 
