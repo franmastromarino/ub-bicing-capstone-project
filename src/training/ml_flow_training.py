@@ -51,14 +51,17 @@ mlflow.set_tracking_uri("databricks")
 mlflow.set_experiment(f'{databricks_base_url}/bicing')
 
 
-def train_model(x, y, xt, yt, model, **model_kwargs):
+def train_model(x, y, xt, yt, model, features, **model_kwargs):
   """
   TODO: Write docstring
   """
 
+  model_name = type(model).__name__
+  run_name = f"Training {model_name}"
+
   # Start to log an experiment
   # A name can be set to distinguish the experiments: run_name='myname'
-  with mlflow.start_run():
+  with mlflow.start_run(run_name=run_name):
 
     #print(f'Starting experiment with learning_rate={learning_rate}, n_estimators={n_estimators}, max_depth={max_depth}')
 
@@ -90,6 +93,8 @@ def train_model(x, y, xt, yt, model, **model_kwargs):
     rmse_test, mae_test, r2_test = eval_metrics(yt, yp)
 
     # Log the metrics to MLFlow
+    mlflow.log_param("features", ", ".join(features))
+
     mlflow.log_metric("rmse", rmse_test)
     mlflow.log_metric("mae", mae_test)
     mlflow.log_metric("r2", r2_test)
@@ -106,21 +111,22 @@ df = pd.read_csv(path)
 df.dropna(inplace=True)
 #df.rename(columns=lambda x: x.replace('ctx_', 'ctx-'), inplace=True)
 
-X = df[['ctx-4', 'ctx-3', 'ctx-2', 'ctx-1']] #df[['month', 'day', 'hour', 'ctx-4', 'ctx-3', 'ctx-2', 'ctx-1']]
-# X = df[['ctx-4', 'ctx-3', 'ctx-2', 'ctx-1']] 
-y = df['percentage_docks_available']
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-
 models = [
     LinearRegression(),
     LinearSVR(),
     DecisionTreeRegressor(),
-    RandomForestRegressor(),
-    GradientBoostingRegressor()
+    # RandomForestRegressor(),
+    # GradientBoostingRegressor()
 
 ]
 
-for model in models:
-  train_model(X_train, y_train, X_test, y_test, model)
+chosen_features = [['ctx-4', 'ctx-3', 'ctx-2', 'ctx-1'], ['ctx-1']]
+
+for features in chosen_features:
+  for model in models:
+
+    X = df[features] 
+    y = df['percentage_docks_available']
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    train_model(X_train, y_train, X_test, y_test, model, features)
