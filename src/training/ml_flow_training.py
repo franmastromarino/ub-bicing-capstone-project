@@ -1,7 +1,8 @@
 """
 Requirements: mlflow
 pip install databricks-cli
-
+TODO: Add requirements to requirements.txt file
+TODO: Model name should appear in databricks
 """
 #Import libraries
 
@@ -22,6 +23,10 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 
 from sklearn.linear_model import LinearRegression
+from sklearn.svm import LinearSVR
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 #This is not used, could be used for the subprocess
@@ -46,24 +51,21 @@ mlflow.set_tracking_uri("databricks")
 mlflow.set_experiment(f'{databricks_base_url}/bicing')
 
 
-def train_model(x, y, xt, yt, learning_rate=0.1, n_estimators=100, max_depth=3):
+def train_model(x, y, xt, yt, model, **model_kwargs):
+  """
+  TODO: Write docstring
+  """
 
   # Start to log an experiment
   # A name can be set to distinguish the experiments: run_name='myname'
   with mlflow.start_run():
 
-    print(f'Starting experiment with learning_rate={learning_rate}, n_estimators={n_estimators}, max_depth={max_depth}')
+    #print(f'Starting experiment with learning_rate={learning_rate}, n_estimators={n_estimators}, max_depth={max_depth}')
 
     # Log the parameters we will use to create the model to MLFlow
-    mlflow.log_param("learning_rate", learning_rate)
-    mlflow.log_param("n_estimators", n_estimators)
-    mlflow.log_param("max_depth", max_depth)
+    for kwarg in model_kwargs:
+        mlflow.log_param(kwarg, model_kwargs[kwarg])
 
-    # Create the model using the parameters
-    model = GradientBoostingRegressor(loss='squared_error',
-                                      learning_rate=learning_rate,
-                                      n_estimators=n_estimators,
-                                      max_depth=max_depth)
 
     # Fit the model to the data
     model.fit(x, y)
@@ -75,7 +77,9 @@ def train_model(x, y, xt, yt, learning_rate=0.1, n_estimators=100, max_depth=3):
     prediction_df = pd.DataFrame(yp, columns=["percentage_docks_available"])
     prediction_df.index.name="index"
 
-    local_path = f"predictions_lr_{learning_rate}_ne_{n_estimators}_md_{max_depth}.csv"
+    #local_path = f"predictions_lr_{learning_rate}_ne_{n_estimators}_md_{max_depth}.csv"
+
+    local_path = f"predictions_model_{model}.csv"
 
     prediction_df.to_csv(local_path)
 
@@ -109,6 +113,14 @@ y = df['percentage_docks_available']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
+models = [
+    LinearRegression(),
+    LinearSVR(),
+    DecisionTreeRegressor(),
+    RandomForestRegressor(),
+    GradientBoostingRegressor()
 
-for lr, ne, md in [(0.01, 200, 2), (0.001, 100, 3)]:
-  train_model(X_train, y_train, X_test, y_test, learning_rate=lr, n_estimators=ne, max_depth=md)
+]
+
+for model in models:
+  train_model(X_train, y_train, X_test, y_test, model)
