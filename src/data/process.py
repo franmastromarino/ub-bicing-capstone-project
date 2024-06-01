@@ -42,6 +42,7 @@ def dataset_preprocess(dataset):
     def extract_month_day(partition):
         datetime = pd.to_datetime(partition['last_reported'], unit='s')
         partition['laboral_day'] = datetime.dt.weekday < 5
+        partition['weekday'] = datetime.dt.day_name()
         partition['month'] = datetime.dt.month
         partition['day'] = datetime.dt.day
         partition['hour'] = datetime.dt.hour
@@ -67,8 +68,7 @@ def dataset_preprocess(dataset):
     dataset = dataset.dropna(subset=['last_reported'])
     dataset = dataset.map_partitions(extract_month_day)
     dataset = dataset.map_partitions(delete_row_out_of_date)
-    return dataset.groupby(['station_id', 'month', 'day', 'hour']).agg({'laboral_day': 'first', 'num_docks_available': 'mean'}).reset_index()
-
+    return dataset.groupby(['station_id', 'month', 'day', 'hour']).agg({'weekday': 'first', 'laboral_day': 'first', 'num_docks_available': 'mean'}).reset_index()
 def dataset_merge(dataset):
     df_stations = dd.read_csv(path_to_csv_file_stations, dtype={'station_id': 'Int64'})
     return dd.merge(dataset, df_stations[['station_id', 'altitude', 'post_code', 'capacity']], on='station_id', how='inner')
