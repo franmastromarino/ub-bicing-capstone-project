@@ -7,6 +7,7 @@ TODO: Add requirements to requirements.txt file
 
 import subprocess
 import mlflow
+from sklearn.discriminant_analysis import StandardScaler
 from training_utils import eval_metrics, plot_real_vs_prediction
 from lstm import create_lstm_model
 
@@ -143,6 +144,11 @@ for features in chosen_features:
   
   # Split train test
   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+  # Scale variables
+  scaler = StandardScaler()
+  X_train = scaler.fit_transform(X_train)
+  X_test = scaler.transform(X_test)
 
   for model in models:
 
