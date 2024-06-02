@@ -19,14 +19,16 @@ def plot_real_vs_prediction(actual, pred):
     fig = plt.figure()
 
     # Plot the real values and the predictions as two different lines
-    plt.plot(actual, pred)
+    plt.scatter(actual, pred, s=0.1)
     #plt.plot(pred, label='predictions')
+    plt.plot([0,1], [0,1], linestyle='--', color='red', alpha=.8)
 
     # Set names and activate the legend
     plt.ylabel('Prediction')
     plt.xlabel('Real')
     plt.title('Real vs Prediction')
-    plt.legend(loc='lower right')
+
+
 
     # Save the figure to mlflow
     mlflow.log_figure(fig, 'my_figure.png')
