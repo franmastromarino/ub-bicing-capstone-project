@@ -118,8 +118,8 @@ models = [
 
 ]
 
-chosen_features = [["station_id", "month", "hour", "post_code", 'ctx-4', 'ctx-3', 'ctx-2', 'ctx-1', 'altitude', 'laboral_day']]
-categorical_features = ["station_id", "hour", "post_code"]
+chosen_features = [["weekday", "month", "hour", "post_code", 'ctx-4', 'ctx-3', 'ctx-2', 'ctx-1', 'altitude', 'laboral_day']]
+categorical_features = ["weekday", "month", "hour", "post_code"]
 
 
 for features in chosen_features:
