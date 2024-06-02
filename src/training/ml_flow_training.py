@@ -18,16 +18,13 @@ import matplotlib.pyplot as plt
 
 import sklearn
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import GradientBoostingRegressor
-
+from sklearn.preprocessing import OneHotEncoder
 
 from sklearn.linear_model import LinearRegression
 from sklearn.svm import LinearSVR
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.preprocessing import OneHotEncoder
 
 #This is not used, could be used for the subprocess
 my_username = "ulisesreytorne@gmail.com"
@@ -107,8 +104,8 @@ def train_model(x, y, xt, yt, model, features, **model_kwargs):
 # Load the data
 
 path = "../../data/processed/groupby/stations_final.csv"
-df = pd.read_csv(path)
-df.dropna(inplace=True)
+full_df = pd.read_csv(path)
+full_df.dropna(inplace=True)
 #df.rename(columns=lambda x: x.replace('ctx_', 'ctx-'), inplace=True)
 
 models = [
@@ -126,26 +123,30 @@ categorical_features = ["station_id", "hour", "post_code"]
 
 
 for features in chosen_features:
+
+  y = full_df['percentage_docks_available']
+
+  df = full_df[features]
+
+  if categorical_features:
+    one_hot_encoder = OneHotEncoder(sparse_output=False)
+    one_hot_variables = one_hot_encoder.fit_transform(df[categorical_features])
+    encoded_df = pd.DataFrame(one_hot_variables, columns=one_hot_encoder.get_feature_names_out())
+    df = pd.concat([df, encoded_df], axis=1)
+    df.drop(columns=categorical_features, inplace=True)
+    # features.append(one_hot_encoder.get_feature_names_out())
+    # print(features)
+    # print(type(features))
+    X = df
+  
+  else:
+    X = df[features] 
+
+  
+  # Split train test
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
   for model in models:
-
-    if categorical_features:
-      one_hot_encoder = OneHotEncoder(sparse_output=False)
-      one_hot_variables = one_hot_encoder.fit_transform(df[categorical_features])
-      encoded_df = pd.DataFrame(one_hot_variables, columns=one_hot_encoder.get_feature_names_out())
-      df = pd.concat([df, encoded_df], axis=1)
-      df.drop(columns=categorical_features, inplace=True)
-      features.append(one_hot_encoder.get_feature_names_out())
-      print(features)
-      print(type(features))
-      X = df
-    
-    else:
-      X = df[features] 
-    y = df['percentage_docks_available']
-
-    
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # if model == "simple_lstm":
     #   # Suppose X_train is of shape (1000, 6) meaning 1000 samples and 6 features
