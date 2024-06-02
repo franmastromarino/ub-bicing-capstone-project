@@ -5,11 +5,11 @@ TODO: Add requirements to requirements.txt file
 """
 #Import libraries
 
-import subprocess
-import mlflow
 from sklearn.discriminant_analysis import StandardScaler
 from training_utils import eval_metrics, plot_real_vs_prediction
 from lstm import create_lstm_model
+import mlflow
+from mlflow_utils import configure_databricks, setup_mlflow
 
 import numpy as np
 import pandas as pd
@@ -23,19 +23,6 @@ from sklearn.svm import LinearSVR
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
-
-# Define the command as a list of arguments
-def configure_databricks(username, password):
-    command = ["databricks", "configure", "--host", "https://community.cloud.databricks.com/"]
-    # Use subprocess to execute the command with username and password
-    process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE)
-    process.communicate(input=f"{username}\n{password}\n".encode())
-
-# Set up MLflow tracking
-def setup_mlflow(username):
-    databricks_base_url = f'/Users/{username}'
-    mlflow.set_tracking_uri("databricks")
-    mlflow.set_experiment(f'{databricks_base_url}/bicing')
 
 
 #This is not used, could be used for the subprocess
