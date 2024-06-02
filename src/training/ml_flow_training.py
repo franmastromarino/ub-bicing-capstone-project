@@ -95,6 +95,9 @@ def train_model(x, y, xt, yt, model, features, **model_kwargs):
     mlflow.log_metric("r2", r2_test)
     mlflow.log_artifact(local_path)
 
+    # Log the model
+    mlflow.sklearn.log_model(model, "model")
+
     # Create a figure with the pred vs actual and log it to mlflow
     plot_real_vs_prediction(yt, yp)
 
