@@ -19,12 +19,12 @@ def plot_real_vs_prediction(actual, pred):
     fig = plt.figure()
 
     # Plot the real values and the predictions as two different lines
-    plt.plot(actual, label='real')
-    plt.plot(pred, label='predictions')
+    plt.plot(actual, pred)
+    #plt.plot(pred, label='predictions')
 
     # Set names and activate the legend
-    plt.ylabel('Price')
-    plt.xlabel('Sample')
+    plt.ylabel('Prediction')
+    plt.xlabel('Real')
     plt.title('Real vs Prediction')
     plt.legend(loc='lower right')
 
