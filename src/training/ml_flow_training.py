@@ -12,11 +12,8 @@ from lstm import create_lstm_model
 
 import numpy as np
 import pandas as pd
-import os
 
-import matplotlib.pyplot as plt
 
-import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 
@@ -26,26 +23,31 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 
+# Define the command as a list of arguments
+def configure_databricks(username, password):
+    command = ["databricks", "configure", "--host", "https://community.cloud.databricks.com/"]
+    # Use subprocess to execute the command with username and password
+    process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE)
+    process.communicate(input=f"{username}\n{password}\n".encode())
+
+# Set up MLflow tracking
+def setup_mlflow(username):
+    databricks_base_url = f'/Users/{username}'
+    mlflow.set_tracking_uri("databricks")
+    mlflow.set_experiment(f'{databricks_base_url}/bicing')
+
+
 #This is not used, could be used for the subprocess
 my_username = "ulisesreytorne@gmail.com"
-databricks_base_url = f'/Users/{my_username}'
 my_password = "Loscinco5!"
 print("El usuario y la contraseña son:")
 print(my_username)
 print(my_password)
 
+configure_databricks(my_username, my_password)
 
-# Define the command as a list of arguments
-command = ["databricks", "configure", "--host", "https://community.cloud.databricks.com/"]
+setup_mlflow(my_username)
 
-# Use subprocess to execute the command with username and password
-process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE)
-
-process.communicate(input=f"{my_username}\n{my_password}\n".encode())
-
-mlflow.set_tracking_uri("databricks")
-
-mlflow.set_experiment(f'{databricks_base_url}/bicing')
 
 
 def train_model(x, y, xt, yt, model, features, **model_kwargs):
@@ -77,21 +79,17 @@ def train_model(x, y, xt, yt, model, features, **model_kwargs):
     prediction_df = pd.DataFrame(yp, columns=["percentage_docks_available"])
     prediction_df.index.name="index"
 
-    #local_path = f"predictions_lr_{learning_rate}_ne_{n_estimators}_md_{max_depth}.csv"
-
     local_path = f"predictions_model_{model}.csv"
-
     prediction_df.to_csv(local_path)
-
     mlflow.log_artifact(local_path)
 
-
-    # Check the metrics (real vs predicted)
+    # Get the metrics (real vs predicted)
     rmse_test, mae_test, r2_test = eval_metrics(yt, yp)
 
-    # Log the metrics to MLFlow
+    # Log the params
     mlflow.log_param("features", ", ".join(features))
-
+    
+    # Log the metrics to MLFlow
     mlflow.log_metric("rmse", rmse_test)
     mlflow.log_metric("mae", mae_test)
     mlflow.log_metric("r2", r2_test)
@@ -106,7 +104,6 @@ def train_model(x, y, xt, yt, model, features, **model_kwargs):
 path = "../../data/processed/groupby/stations_final.csv"
 full_df = pd.read_csv(path)
 full_df.dropna(inplace=True)
-#df.rename(columns=lambda x: x.replace('ctx_', 'ctx-'), inplace=True)
 
 models = [
     LinearRegression(),
@@ -134,9 +131,7 @@ for features in chosen_features:
     encoded_df = pd.DataFrame(one_hot_variables, columns=one_hot_encoder.get_feature_names_out())
     df = pd.concat([df, encoded_df], axis=1)
     df.drop(columns=categorical_features, inplace=True)
-    # features.append(one_hot_encoder.get_feature_names_out())
-    # print(features)
-    # print(type(features))
+
     X = df
   
   else:
