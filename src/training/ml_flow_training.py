@@ -1,73 +1,61 @@
 """
 Requirements: mlflow
 pip install databricks-cli
-
+TODO: Add requirements to requirements.txt file
 """
 #Import libraries
 
-import subprocess
-import mlflow
+from sklearn.discriminant_analysis import StandardScaler
 from training_utils import eval_metrics, plot_real_vs_prediction
-
+from lstm import create_lstm_model
+import mlflow
+from mlflow_utils import configure_databricks, setup_mlflow
 
 import numpy as np
 import pandas as pd
-import os
 
-import matplotlib.pyplot as plt
 
-import sklearn
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
 
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.svm import LinearSVR
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
+
 
 #This is not used, could be used for the subprocess
 my_username = "ulisesreytorne@gmail.com"
-databricks_base_url = f'/Users/{my_username}'
+my_password = "Loscinco5!"
 print("El usuario y la contraseña son:")
 print(my_username)
-print("Loscinco5!")
+print(my_password)
+
+configure_databricks(my_username, my_password)
+
+setup_mlflow(my_username)
 
 
-# Define the command as a list of arguments
-command = ["databricks", "configure", "--host", "https://community.cloud.databricks.com/"]
 
-# Use subprocess to execute the command
-# subprocess.run(command, check=True)
+def train_model(x, y, xt, yt, model, features, **model_kwargs):
+  """
+  TODO: Write docstring
+  """
 
-# Use subprocess to execute the command with username and password
-process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE)
-my_password = "Loscinco5!"
-
-process.communicate(input=f"{my_username}\n{my_password}\n".encode())
-
-
-mlflow.set_tracking_uri("databricks")
-
-mlflow.set_experiment(f'{databricks_base_url}/bicing')
-
-
-from sklearn.ensemble import GradientBoostingRegressor
-
-def train_model(x, y, xt, yt, learning_rate=0.1, n_estimators=100, max_depth=3):
+  model_name = type(model).__name__
+  run_name = f"Training {model_name}"
 
   # Start to log an experiment
   # A name can be set to distinguish the experiments: run_name='myname'
-  with mlflow.start_run():
+  with mlflow.start_run(run_name=run_name):
 
-    print(f'Starting experiment with learning_rate={learning_rate}, n_estimators={n_estimators}, max_depth={max_depth}')
+    #print(f'Starting experiment with learning_rate={learning_rate}, n_estimators={n_estimators}, max_depth={max_depth}')
 
     # Log the parameters we will use to create the model to MLFlow
-    mlflow.log_param("learning_rate", learning_rate)
-    mlflow.log_param("n_estimators", n_estimators)
-    mlflow.log_param("max_depth", max_depth)
+    for kwarg in model_kwargs:
+        mlflow.log_param(kwarg, model_kwargs[kwarg])
 
-    # Create the model using the parameters
-    model = GradientBoostingRegressor(loss='squared_error',
-                                      learning_rate=learning_rate,
-                                      n_estimators=n_estimators,
-                                      max_depth=max_depth)
 
     # Fit the model to the data
     model.fit(x, y)
@@ -79,21 +67,24 @@ def train_model(x, y, xt, yt, learning_rate=0.1, n_estimators=100, max_depth=3):
     prediction_df = pd.DataFrame(yp, columns=["percentage_docks_available"])
     prediction_df.index.name="index"
 
-    local_path = f"predictions_lr_{learning_rate}_ne_{n_estimators}_md_{max_depth}.csv"
-
+    local_path = f"predictions_model_{model}.csv"
     prediction_df.to_csv(local_path)
-
     mlflow.log_artifact(local_path)
 
-
-    # Check the metrics (real vs predicted)
+    # Get the metrics (real vs predicted)
     rmse_test, mae_test, r2_test = eval_metrics(yt, yp)
 
+    # Log the params
+    mlflow.log_param("features", ", ".join(features))
+    
     # Log the metrics to MLFlow
     mlflow.log_metric("rmse", rmse_test)
     mlflow.log_metric("mae", mae_test)
     mlflow.log_metric("r2", r2_test)
     mlflow.log_artifact(local_path)
+
+    # Log the model
+    mlflow.sklearn.log_model(model, "model")
 
     # Create a figure with the pred vs actual and log it to mlflow
     plot_real_vs_prediction(yt, yp)
@@ -101,18 +92,60 @@ def train_model(x, y, xt, yt, learning_rate=0.1, n_estimators=100, max_depth=3):
 
 # Load the data
 
-path = "../../data/processed/groupby/stations_final_2023.csv"
-df = pd.read_csv(path)
-df.dropna(inplace=True)
-df.rename(columns=lambda x: x.replace('ctx_', 'ctx-'), inplace=True)
+path = "../../data/processed/groupby/stations_final.csv"
+full_df = pd.read_csv(path)
+full_df.dropna(inplace=True)
 
-X = df[['month', 'day', 'hour', 'ctx-4', 'ctx-3', 'ctx-2', 'ctx-1']]
-# X = df[['ctx-4', 'ctx-3', 'ctx-2', 'ctx-1']] 
-y = df['percentage_docks_available']
+models = [
+    LinearRegression(),
+    LinearSVR(),
+    DecisionTreeRegressor(),
+    RandomForestRegressor(),
+    GradientBoostingRegressor(),
+    #"simple_lstm"
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+]
+
+chosen_features = [["weekday", "month", "hour", "post_code", 'ctx-4', 'ctx-3', 'ctx-2', 'ctx-1', 'altitude', 'laboral_day']]
+categorical_features = ["weekday", "month", "hour", "post_code"]
 
 
+for features in chosen_features:
 
-for lr, ne, md in [(0.01, 200, 2), (0.001, 100, 3)]:
-  train_model(X_train, y_train, X_test, y_test, learning_rate=lr, n_estimators=ne, max_depth=md)
+  y = full_df['percentage_docks_available']
+
+  df = full_df[features]
+
+  if categorical_features:
+    one_hot_encoder = OneHotEncoder(sparse_output=False)
+    one_hot_variables = one_hot_encoder.fit_transform(df[categorical_features])
+    encoded_df = pd.DataFrame(one_hot_variables, columns=one_hot_encoder.get_feature_names_out())
+    df = pd.concat([df, encoded_df], axis=1)
+    df.drop(columns=categorical_features, inplace=True)
+
+    X = df
+  
+  else:
+    X = df[features] 
+
+  
+  # Split train test
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+  # Scale variables
+  scaler = StandardScaler()
+  X_train = scaler.fit_transform(X_train)
+  X_test = scaler.transform(X_test)
+
+  for model in models:
+
+    # if model == "simple_lstm":
+    #   # Suppose X_train is of shape (1000, 6) meaning 1000 samples and 6 features
+    #   X_train = X_train.values.reshape((X_train.shape[0], X_train.shape[1], 1)) # This will reshape it to (1000, 1, 6)
+
+    #   # Do the same for X_test
+    #   X_test = X_test.values.reshape((X_train.shape[0], X_train.shape[1], 1))
+
+    #   model = create_lstm_model((X_train.shape))
+
+    train_model(X_train, y_train, X_test, y_test, model, features)

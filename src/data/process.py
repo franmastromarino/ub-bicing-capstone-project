@@ -2,12 +2,11 @@ import pandas as pd
 import dask.dataframe as dd
 
 # Define paths
-path_to_csv_folder_2023 = './data/raw/historical/2023/*.csv'
-path_to_csv_folder_2024 = './data/raw/historical/2024/*.csv'
-path_to_csv_file_stations = './data/raw/Informacio_Estacions_Bicing.csv'
-path_to_final_csv = './data/processed/groupby/stations_final.csv'
+YEAR = 2024
+PATH_TO_CSV_HISTORY = './data/raw/historical/' + str(YEAR) + '/*.csv'
+PATH_TO_CSV_SAVE = './data/processed/groupby/stations_final_' + str(YEAR) + '.csv'
     
-def dataset_load(path_to_csv):
+def dataset_load():
     # Define data types and columns to drop
     dtype = {
         'station_id': 'Int64',  # Assuming station_id has no non-integer values
@@ -25,23 +24,14 @@ def dataset_load(path_to_csv):
         'last_updated': 'Int64',  # If this column has no non-integer values, else consider 'object'
         'ttl': 'Int64'  # Using Pandas' nullable integer
     }
-    return dd.read_csv(path_to_csv, na_values=['NAN'], dtype=dtype)
-
-def dataset_filter_valid_station_ids(dataset_2023):
-    # Get present station_ids in both datasets
-    station_ids_2023 = dataset_2023['station_id'].unique().compute()
-    dataset_2024 = dataset_load(path_to_csv_folder_2024)
-    station_ids_2024 = dataset_2024['station_id'].unique().compute()
-    # Get the intersection of both sets
-    valid_station_ids = set(station_ids_2023).intersection(set(station_ids_2024))
-    # Filter the dataset
-    return dataset_2023[dataset_2023['station_id'].isin(valid_station_ids)]
+    return dd.read_csv(PATH_TO_CSV_HISTORY, na_values=['NAN'], dtype=dtype)
 
 def dataset_preprocess(dataset):
 
     def extract_month_day(partition):
         datetime = pd.to_datetime(partition['last_reported'], unit='s')
         partition['laboral_day'] = datetime.dt.weekday < 5
+        partition['weekday'] = datetime.dt.day_name()
         partition['month'] = datetime.dt.month
         partition['day'] = datetime.dt.day
         partition['hour'] = datetime.dt.hour
@@ -49,7 +39,7 @@ def dataset_preprocess(dataset):
         return partition
     
     def delete_row_out_of_date(partition):
-        return partition[partition['year'] == 2023]
+        return partition[partition['year'] == YEAR]
     
     drop_columns = [
         'num_bikes_available', 
@@ -67,9 +57,10 @@ def dataset_preprocess(dataset):
     dataset = dataset.dropna(subset=['last_reported'])
     dataset = dataset.map_partitions(extract_month_day)
     dataset = dataset.map_partitions(delete_row_out_of_date)
-    return dataset.groupby(['station_id', 'month', 'day', 'hour']).agg({'laboral_day': 'first', 'num_docks_available': 'mean'}).reset_index()
+    return dataset.groupby(['station_id', 'month', 'day', 'hour']).agg({'weekday': 'first', 'laboral_day': 'first', 'num_docks_available': 'mean'}).reset_index()
 
 def dataset_merge(dataset):
+    path_to_csv_file_stations = './data/raw/Informacio_Estacions_Bicing.csv'
     df_stations = dd.read_csv(path_to_csv_file_stations, dtype={'station_id': 'Int64'})
     return dd.merge(dataset, df_stations[['station_id', 'altitude', 'post_code', 'capacity']], on='station_id', how='inner')
 
@@ -116,20 +107,19 @@ def dataset_select_every_5_hours(dataset):
     return dataset.compute().iloc[::5]
 
 def dataset_save_to_csv(dataset):
-    dataset.reset_index(drop=True).to_csv(path_to_final_csv, index=True, index_label='index')
+    dataset.reset_index(drop=True).to_csv(PATH_TO_CSV_SAVE, index=True, index_label='index')
 
 def dataset_create_index(dataset):
     return dataset.reset_index(drop=True)
 
-# # Process workflow
-dataset = dataset_load(path_to_csv_folder_2023)
-dataset = dataset_filter_valid_station_ids(dataset)
+# Process workflow
+dataset = dataset_load()
 dataset = dataset_preprocess(dataset)
 dataset = dataset_merge(dataset)
 dataset = dataset_add_percentage_docks_available(dataset)
-dataset = dataset_order_by_station_id_date(dataset)  # Reorder data first
-dataset = dataset_add_ctx(dataset)  # Apply context columns on the correctly ordered data
+dataset = dataset_order_by_station_id_date(dataset)
+dataset = dataset_add_ctx(dataset)
 dataset = dataset_create_index(dataset)
 dataset = dataset_rearrange(dataset)
 dataset = dataset_select_every_5_hours(dataset)
-dataset_save_to_csv(dataset)  # Save the final DataFram
+dataset_save_to_csv(dataset)
