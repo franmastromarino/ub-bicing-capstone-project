@@ -1,13 +1,13 @@
 import pandas as pd
 import dask.dataframe as dd
-import numpy as np
 
 # Define paths
-path_to_csv_folder = './data/raw/historical/2024/*.csv'
+path_to_csv_folder_2023 = './data/raw/historical/2023/*.csv'
+path_to_csv_folder_2024 = './data/raw/historical/2024/*.csv'
 path_to_csv_file_stations = './data/raw/Informacio_Estacions_Bicing.csv'
 path_to_final_csv = './data/processed/groupby/stations_final.csv'
-
-def dataset_load():
+    
+def dataset_load(path_to_csv):
     # Define data types and columns to drop
     dtype = {
         'station_id': 'Int64',  # Assuming station_id has no non-integer values
@@ -25,20 +25,31 @@ def dataset_load():
         'last_updated': 'Int64',  # If this column has no non-integer values, else consider 'object'
         'ttl': 'Int64'  # Using Pandas' nullable integer
     }
-    return dd.read_csv(path_to_csv_folder, na_values=['NAN'], dtype=dtype)
+    return dd.read_csv(path_to_csv, na_values=['NAN'], dtype=dtype)
+
+def dataset_filter_valid_station_ids(dataset_2023):
+    # Get present station_ids in both datasets
+    station_ids_2023 = dataset_2023['station_id'].unique().compute()
+    dataset_2024 = dataset_load(path_to_csv_folder_2024)
+    station_ids_2024 = dataset_2024['station_id'].unique().compute()
+    # Get the intersection of both sets
+    valid_station_ids = set(station_ids_2023).intersection(set(station_ids_2024))
+    # Filter the dataset
+    return dataset_2023[dataset_2023['station_id'].isin(valid_station_ids)]
 
 def dataset_preprocess(dataset):
 
     def extract_month_day(partition):
-        partition['last_reported'] = pd.to_datetime(partition['last_reported'], unit='s')
-        partition['month'] = partition['last_reported'].dt.month
-        partition['day'] = partition['last_reported'].dt.day
-        partition['hour'] = partition['last_reported'].dt.hour
-        partition['year'] = partition['last_reported'].dt.year
+        datetime = pd.to_datetime(partition['last_reported'], unit='s')
+        partition['laboral_day'] = datetime.dt.weekday < 5
+        partition['month'] = datetime.dt.month
+        partition['day'] = datetime.dt.day
+        partition['hour'] = datetime.dt.hour
+        partition['year'] = datetime.dt.year
         return partition
     
     def delete_row_out_of_date(partition):
-        return partition[partition['year'] == 2024]
+        return partition[partition['year'] == 2023]
     
     drop_columns = [
         'num_bikes_available', 
@@ -56,16 +67,17 @@ def dataset_preprocess(dataset):
     dataset = dataset.dropna(subset=['last_reported'])
     dataset = dataset.map_partitions(extract_month_day)
     dataset = dataset.map_partitions(delete_row_out_of_date)
-    return dataset.groupby(['station_id', 'month', 'day', 'hour']).agg({'num_docks_available': 'mean'}).reset_index()
+    return dataset.groupby(['station_id', 'month', 'day', 'hour']).agg({'laboral_day': 'first', 'num_docks_available': 'mean'}).reset_index()
 
 def dataset_merge(dataset):
     df_stations = dd.read_csv(path_to_csv_file_stations, dtype={'station_id': 'Int64'})
-    return dd.merge(dataset, df_stations[['station_id', 'capacity']], on='station_id', how='inner')
+    return dd.merge(dataset, df_stations[['station_id', 'altitude', 'post_code', 'capacity']], on='station_id', how='inner')
 
 def dataset_add_percentage_docks_available(dataset):
     
     def calculate_percentage_docks_available(partition):
-        partition['percentage_docks_available'] = (partition['num_docks_available'] / partition['capacity']).round(16)
+        # Calculate the percentage of docks available and round to 16 decimal places and max 1
+        partition['percentage_docks_available'] = (partition['num_docks_available'] / partition['capacity']).round(16).clip(0, 1)
         return partition.drop(['num_docks_available', 'capacity'], axis=1)
     
     return dataset.map_partitions(calculate_percentage_docks_available)
@@ -75,7 +87,7 @@ def dataset_order_by_station_id_date(dataset):
 
 def dataset_add_ctx(dataset):
     # Define a custom function to apply to each group
-    def apply_shifts(group):
+    def calculate_contexts(group):
         group = group.sort_values(by=['month', 'day', 'hour'])
         group = group.assign(
             ctx_4=group['percentage_docks_available'].shift(4),
@@ -83,13 +95,15 @@ def dataset_add_ctx(dataset):
             ctx_2=group['percentage_docks_available'].shift(2),
             ctx_1=group['percentage_docks_available'].shift(1)
         )
-        # Fill na values of every station first four hours -> https://snipboard.io/yX2Q4d.jpg
+        # Fill na values of every station first four hours
         group[['ctx_4', 'ctx_3', 'ctx_2', 'ctx_1']] = group[['ctx_4', 'ctx_3', 'ctx_2', 'ctx_1']].ffill().bfill()
+         # Rename columns to use 'ctx-' prefix
+        group = group.rename(columns={'ctx_4': 'ctx-4', 'ctx_3': 'ctx-3', 'ctx_2': 'ctx-2', 'ctx_1': 'ctx-1'})
         return group
     
     # Group by 'station_id', then apply the shifting function to each group
     return dataset.map_partitions(
-        lambda partition: partition.groupby('station_id').apply(apply_shifts)
+        lambda partition: partition.groupby('station_id').apply(calculate_contexts)
     )
 
 def dataset_rearrange(dataset):
@@ -107,8 +121,9 @@ def dataset_save_to_csv(dataset):
 def dataset_create_index(dataset):
     return dataset.reset_index(drop=True)
 
-# Process workflow
-dataset = dataset_load()
+# # Process workflow
+dataset = dataset_load(path_to_csv_folder_2023)
+dataset = dataset_filter_valid_station_ids(dataset)
 dataset = dataset_preprocess(dataset)
 dataset = dataset_merge(dataset)
 dataset = dataset_add_percentage_docks_available(dataset)
