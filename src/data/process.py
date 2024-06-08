@@ -2,7 +2,7 @@ import pandas as pd
 import dask.dataframe as dd
 
 # Define paths
-YEAR = 2024
+YEAR = 2023
 PATH_TO_CSV_HISTORY = './data/raw/historical/' + str(YEAR) + '/*.csv'
 PATH_TO_CSV_SAVE = './data/processed/groupby/stations_final_' + str(YEAR) + '.csv'
     

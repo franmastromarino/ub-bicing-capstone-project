@@ -7,3 +7,4 @@ data/raw/historical/2024/*.csv
 data/raw/historical/2024/*.7z
 venv/
 data/processed/historical/*.csv
+catboost_info

@@ -27,7 +27,7 @@ logged_model = 'runs:/3ad33955f8dc4d01bdb52904cfedb79a/model'
 loaded_model = mlflow.pyfunc.load_model(logged_model)
 
 print(os.path.abspath(os.getcwd()))
-full_df = pd.read_csv("./data/processed/groupby/stations_final_2024.csv")
+full_df = pd.read_csv("./data/processed/groupby/metadata_sample_submission_2024_features.csv")
 
 features = ["weekday", "month", "hour", "post_code", "ctx-4", "ctx-3", "ctx-2", "ctx-1", "altitude", "laboral_day"]
 
@@ -56,4 +56,4 @@ y_pred = loaded_model.predict(X_test)
 
 prediction_df = pd.DataFrame(y_pred, columns=["percentage_docks_available"])
 prediction_df.index.name="index"
-prediction_df.to_csv("./data/processed/groupby/pred_stations_final_2024.csv")
+prediction_df.to_csv("./data/processed/groupby/metadata_sample_submission_2024_features_pred.csv")
