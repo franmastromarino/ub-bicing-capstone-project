@@ -3,10 +3,13 @@ import pandas as pd
 import folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
+from streamlit_read import streamlit_read
 
 # Function to be called when the button is clicked
-def hello_world(selected_station_id):
-    st.write(f"Hello, world: {selected_station_id}")
+def predict(selected_station_id, selected_datetime):
+    prediction = streamlit_read(selected_station_id, selected_datetime)
+    st.write(f"Prediction: {prediction}")
+
 
 # Load the dataset
 path_to_csv_file_stations = './data/raw/Informacio_Estacions_Bicing.csv'
@@ -39,6 +42,8 @@ with col3:
     hours = [f"{hour}:00" for hour in range(24)]
     selected_time = st.selectbox("Time", hours)
 
+selected_datetime = pd.to_datetime(f"{selected_date} {selected_time}").strftime("%Y-%m-%d %H")
+
 # Filter the data based on the selected station
 if selected_station_name == "All stations":
     selected_station_data = df_stations
@@ -60,7 +65,7 @@ else:
 
     # Add a button to calculate the prediction
     if st.button("Calculate Prediction", use_container_width=True, disabled= selected_station_name == "All stations"):
-        hello_world(selected_station_id)
+        predict(selected_station_id, selected_datetime)
 
 # Create the base map
 m = folium.Map(location=[df_stations['lat'].mean(), df_stations['lon'].mean()], zoom_start=13, control_scale=True)
