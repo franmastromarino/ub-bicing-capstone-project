@@ -26,3 +26,10 @@ python -m pip install "dask[complete]"
 ```
 pip freeze > requirements.txt
 ```
+
+## Streamlit
+
+How to execute
+```
+streamlit run app/streamlit.py
+```
