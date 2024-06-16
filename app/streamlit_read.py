@@ -25,6 +25,12 @@ def streamlit_read(station_id, datetime_str, csv_input = 'data/processed/groupby
                            (df_input['month'] == month) & 
                            (df_input['day'] == day) & 
                            (df_input['hour'] == hour)]
+    while df_filtered.empty:
+        hour = hour+1
+        df_filtered = df_input[(df_input['station_id'] == station_id) & 
+                           (df_input['month'] == month) & 
+                           (df_input['day'] == day) & 
+                           (df_input['hour'] == hour)]
 
     # Get the prediction based on df_filtered['index']
     index = df_filtered['index'].values[0]
@@ -36,9 +42,9 @@ def streamlit_read(station_id, datetime_str, csv_input = 'data/processed/groupby
 if __name__ == "__main__":
     # Example usage
     station_id = 1
-    datetime_str = '2024-01-01 00'
+    datetime_str = '2024-01-01 9'
     csv_input = 'data/processed/groupby/stations_final_2024.csv'
-    csv_predictions = 'data/processed/groupby/pred_stations_final_2024.csv'
+    csv_predictions = 'data/processed/groupby/pred_stations_final_2024_full_2024.csv'
 
     prediction = streamlit_read(station_id, datetime_str, csv_input, csv_predictions)
     print(prediction)
