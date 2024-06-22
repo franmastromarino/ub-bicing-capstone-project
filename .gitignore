@@ -9,3 +9,4 @@ venv/
 data/processed/historical/*.csv
 data/processed/groupby/*.csv
 .cache.sqlite
+app/__pycache__/
