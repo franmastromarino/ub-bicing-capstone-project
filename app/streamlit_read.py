@@ -41,8 +41,8 @@ def streamlit_read(station_id, datetime_str, csv_input = 'data/processed/groupby
 
 if __name__ == "__main__":
     # Example usage
-    station_id = 1
-    datetime_str = '2024-01-01 9'
+    station_id = 102
+    datetime_str = '2024-01-01 0'
     csv_input = 'data/processed/groupby/stations_final_2024.csv'
     csv_predictions = 'data/processed/groupby/pred_stations_final_2024_full_2024.csv'
 
