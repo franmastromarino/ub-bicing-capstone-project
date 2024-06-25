@@ -67,7 +67,14 @@ else:
     prediction = st.session_state.get('prediction', 'N/A')
     station_info['prediction'] = prediction
     station_info_df = pd.DataFrame(station_info).T
-    st.table(station_info_df)
+    
+    # Apply green color to the prediction column
+    def highlight_prediction(val):
+        color = 'lightgreen' if val == prediction else ''
+        return f'background-color: {color}'
+
+    station_info_styled = station_info_df.style.map(highlight_prediction)
+    st.table(station_info_styled)
 
 # Create the base map
 m = folium.Map(location=[df_stations['lat'].mean(), df_stations['lon'].mean()], zoom_start=13, control_scale=True)
